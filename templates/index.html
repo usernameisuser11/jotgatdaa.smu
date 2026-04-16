@@ -1,1 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>상명대 공지 모아보기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script id="groups-data" type="application/json">{{ groups|tojson|safe }}</script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="hero">
+            <div class="hero__text">
+                <p class="eyebrow">SMU NOTICE HUB</p>
+                <h1>상명대 공지 모아보기</h1>
+                <p class="hero__desc">핸드폰에서도 보기 편하게, 자주 보는 공지를 한 화면에서 빠르게 확인할 수 있게 정리했어.</p>
+            </div>
+            <div class="hero__stats">
+                <div class="stat-card">
+                    <span>카테고리</span>
+                    <strong id="group-count">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>현재 보기</span>
+                    <strong id="current-label">없음</strong>
+                </div>
+            </div>
+        </header>
 
+        <section class="toolbar card">
+            <div>
+                <p class="section-label">대분류</p>
+                <div id="top" class="chip-row"></div>
+            </div>
+
+            <div id="sub-wrap" class="sub-wrap is-hidden">
+                <p class="section-label">세부 분류</p>
+                <div id="sub" class="chip-row chip-row--sub"></div>
+            </div>
+
+            <div class="search-wrap">
+                <label for="search" class="section-label">현재 목록 검색</label>
+                <div class="search-box">
+                    <input id="search" type="search" placeholder="제목, 작성자, 출처로 검색">
+                    <button id="clear-search" type="button">초기화</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="summary-row">
+            <div class="summary-card card">
+                <span>공지 수</span>
+                <strong id="notice-count">0</strong>
+            </div>
+            <div class="summary-card card">
+                <span>선택된 분류</span>
+                <strong id="selected-sub">전체</strong>
+            </div>
+        </section>
+
+        <section class="card list-section">
+            <div class="list-head">
+                <div>
+                    <h2>공지 목록</h2>
+                    <p id="list-description">카테고리를 선택하면 공지가 여기에 표시돼.</p>
+                </div>
+                <button id="scroll-top" type="button" class="ghost-btn">맨 위로</button>
+            </div>
+
+            <div id="loading" class="status-box is-hidden">불러오는 중...</div>
+            <div id="empty" class="status-box">위 카테고리를 눌러서 공지를 불러와 줘.</div>
+            <div id="notice-list" class="notice-list"></div>
+        </section>
+    </div>
+
+    <script>
+        const CATS = JSON.parse(document.getElementById("groups-data").textContent);
+
+        const state = {
+            currentGroup: null,
+            currentSub: null,
+            items: [],
+            filtered: []
+        };
+
+        const topEl = document.getElementById("top");
+        const subEl = document.getElementById("sub");
+        const subWrapEl = document.getElementById("sub-wrap");
+        const noticeListEl = document.getElementById("notice-list");
+        const emptyEl = document.getElementById("empty");
+        const loadingEl = document.getElementById("loading");
+        const searchEl = document.getElementById("search");
+        const clearSearchEl = document.getElementById("clear-search");
+        const currentLabelEl = document.getElementById("current-label");
+        const selectedSubEl = document.getElementById("selected-sub");
+        const groupCountEl = document.getElementById("group-count");
+        const noticeCountEl = document.getElementById("notice-count");
+        const listDescriptionEl = document.getElementById("list-description");
+
+        function createChip(label, variant = "main", active = false, onClick = null) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `chip chip--${variant}${active ? " is-active" : ""}`;
+            button.textContent = label;
+
+            if (onClick) {
+                button.addEventListener("click", onClick);
+            }
+
+            return button;
+        }
+
+        function init() {
+            groupCountEl.textContent = Object.keys(CATS).length;
+
+            Object.keys(CATS).forEach(group => {
+                const button = createChip(group, "main", false, () => selectGroup(group));
+                topEl.appendChild(button);
+            });
+        }
+
+        function updateMainActive() {
+            [...topEl.children].forEach(btn => {
+                btn.classList.toggle("is-active", btn.textContent === state.currentGroup);
+            });
+        }
+
+        function renderSubs() {
+            subEl.innerHTML = "";
+            const subs = CATS[state.currentGroup] || [];
+
+            if (!subs.length) {
+                subWrapEl.classList.add("is-hidden");
+                return;
+            }
+
+            subWrapEl.classList.remove("is-hidden");
+
+            const allButton = createChip("전체 보기", "sub", !state.currentSub, () => {
+                state.currentSub = null;
+                updateSubActive();
+                fetchGroup();
+            });
+            subEl.appendChild(allButton);
+
+            subs.forEach(sub => {
+                const button = createChip(sub, "sub", state.currentSub === sub, () => {
+                    state.currentSub = sub;
+                    updateSubActive();
+                    fetchSub(sub);
+                });
+                subEl.appendChild(button);
+            });
+        }
+
+        function updateSubActive() {
+            [...subEl.children].forEach(btn => {
+                const shouldActive =
+                    (!state.currentSub && btn.textContent === "전체 보기") ||
+                    btn.textContent === state.currentSub;
+
+                btn.classList.toggle("is-active", shouldActive);
+            });
+
+            selectedSubEl.textContent = state.currentSub || "전체";
+        }
+
+        function setLoading(show) {
+            loadingEl.classList.toggle("is-hidden", !show);
+
+            if (show) {
+                emptyEl.classList.add("is-hidden");
+                noticeListEl.innerHTML = "";
+            }
+        }
+
+        function selectGroup(group) {
+            state.currentGroup = group;
+            state.currentSub = null;
+            state.items = [];
+            searchEl.value = "";
+
+            currentLabelEl.textContent = group;
+            listDescriptionEl.textContent = `${group} 공지를 불러오는 중이야.`;
+
+            updateMainActive();
+            renderSubs();
+            updateSubActive();
+            fetchGroup();
+        }
+
+        async function fetchGroup() {
+            if (!state.currentGroup) return;
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(`/fetch?group=${encodeURIComponent(state.currentGroup)}`);
+                const data = await response.json();
+
+                state.items = Array.isArray(data.items) ? data.items : [];
+                applyFilter();
+                listDescriptionEl.textContent = `${state.currentGroup} 공지를 모아서 보여주는 중이야.`;
+            } catch (error) {
+                console.error(error);
+                renderError("공지 불러오기에 실패했어. 잠시 후 다시 시도해 줘.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function fetchSub(sub) {
+            setLoading(true);
+
+            try {
+                const response = await fetch(`/fetch?sub=${encodeURIComponent(sub)}`);
+                const data = await response.json();
+
+                state.items = Array.isArray(data.items) ? data.items : [];
+                applyFilter();
+                listDescriptionEl.textContent = `${sub} 공지 목록이야.`;
+            } catch (error) {
+                console.error(error);
+                renderError("세부 공지를 불러오지 못했어. 잠시 후 다시 시도해 줘.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function applyFilter() {
+            const keyword = searchEl.value.trim().toLowerCase();
+
+            state.filtered = state.items.filter(item => {
+                const haystack = [
+                    item.title,
+                    item.author,
+                    item.date,
+                    item.source
+                ].join(" ").toLowerCase();
+
+                return haystack.includes(keyword);
+            });
+
+            renderList();
+        }
+
+        function renderError(message) {
+            noticeListEl.innerHTML = "";
+            emptyEl.textContent = message;
+            emptyEl.classList.remove("is-hidden");
+            noticeCountEl.textContent = "0";
+        }
+
+        function renderList() {
+            noticeListEl.innerHTML = "";
+            noticeCountEl.textContent = state.filtered.length;
+
+            if (!state.filtered.length) {
+                emptyEl.textContent = state.items.length ? "검색 결과가 없어." : "표시할 공지가 없어.";
+                emptyEl.classList.remove("is-hidden");
+                return;
+            }
+
+            emptyEl.classList.add("is-hidden");
+
+            state.filtered.forEach((item, index) => {
+                const card = document.createElement("article");
+                card.className = "notice-card";
+
+                card.innerHTML = `
+                    <div class="notice-card__top">
+                        <span class="notice-index">${index + 1}</span>
+                        ${item.source ? `<span class="notice-source">${item.source}</span>` : ""}
+                    </div>
+                    <a class="notice-title" href="${item.link || '#'}" target="_blank" rel="noopener noreferrer">
+                        ${item.title || "제목 없음"}
+                    </a>
+                    <div class="notice-meta">
+                        <span>${item.author || "작성자 미표시"}</span>
+                        <span>${item.date || "날짜 미표시"}</span>
+                    </div>
+                `;
+
+                noticeListEl.appendChild(card);
+            });
+        }
+
+        searchEl.addEventListener("input", applyFilter);
+
+        clearSearchEl.addEventListener("click", () => {
+            searchEl.value = "";
+            applyFilter();
+        });
+
+        document.getElementById("scroll-top").addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+        init();
+    </script>
+</body>
+</html>
