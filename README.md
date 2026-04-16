@@ -1,1 +1,0 @@
-# jotgatdaa.smu
