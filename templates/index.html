@@ -11,18 +11,18 @@
     <div class="app-shell">
         <header class="hero">
             <div class="hero__text">
-                <p class="eyebrow">SMU NOTICE HUB</p>
+                <p class="eyebrow">SMU NOTICE</p>
                 <h1>상명대 공지 모아보기</h1>
-                <p class="hero__desc">핸드폰에서도 보기 편하게, 자주 보는 공지를 한 화면에서 빠르게 확인할 수 있게 정리했어.</p>
+                <p class="hero__desc">주요 공지 카테고리별 모아보기, 모바일 화면 최적화, 빠른 검색 지원</p>
             </div>
             <div class="hero__stats">
                 <div class="stat-card">
-                    <span>카테고리</span>
+                    <span>카테고리 수</span>
                     <strong id="group-count">0</strong>
                 </div>
                 <div class="stat-card">
-                    <span>현재 보기</span>
-                    <strong id="current-label">없음</strong>
+                    <span>현재 선택</span>
+                    <strong id="current-label">미선택</strong>
                 </div>
             </div>
         </header>
@@ -41,7 +41,7 @@
             <div class="search-wrap">
                 <label for="search" class="section-label">현재 목록 검색</label>
                 <div class="search-box">
-                    <input id="search" type="search" placeholder="제목, 작성자, 출처로 검색">
+                    <input id="search" type="search" placeholder="제목, 작성자, 출처 검색">
                     <button id="clear-search" type="button">초기화</button>
                 </div>
             </div>
@@ -53,7 +53,7 @@
                 <strong id="notice-count">0</strong>
             </div>
             <div class="summary-card card">
-                <span>선택된 분류</span>
+                <span>세부 선택</span>
                 <strong id="selected-sub">전체</strong>
             </div>
         </section>
@@ -62,13 +62,13 @@
             <div class="list-head">
                 <div>
                     <h2>공지 목록</h2>
-                    <p id="list-description">카테고리를 선택하면 공지가 여기에 표시돼.</p>
+                    <p id="list-description">카테고리 선택 후 공지 목록 확인</p>
                 </div>
                 <button id="scroll-top" type="button" class="ghost-btn">맨 위로</button>
             </div>
 
-            <div id="loading" class="status-box is-hidden">불러오는 중...</div>
-            <div id="empty" class="status-box">위 카테고리를 눌러서 공지를 불러와 줘.</div>
+            <div id="loading" class="status-box is-hidden">공지 불러오는 중</div>
+            <div id="empty" class="status-box">위 카테고리 선택 후 공지 확인</div>
             <div id="notice-list" class="notice-list"></div>
         </section>
     </div>
@@ -136,7 +136,7 @@
 
             subWrapEl.classList.remove("is-hidden");
 
-            const allButton = createChip("전체 보기", "sub", !state.currentSub, () => {
+            const allButton = createChip("전체", "sub", !state.currentSub, () => {
                 state.currentSub = null;
                 updateSubActive();
                 fetchGroup();
@@ -156,7 +156,7 @@
         function updateSubActive() {
             [...subEl.children].forEach(btn => {
                 const shouldActive =
-                    (!state.currentSub && btn.textContent === "전체 보기") ||
+                    (!state.currentSub && btn.textContent === "전체") ||
                     btn.textContent === state.currentSub;
 
                 btn.classList.toggle("is-active", shouldActive);
@@ -181,7 +181,7 @@
             searchEl.value = "";
 
             currentLabelEl.textContent = group;
-            listDescriptionEl.textContent = `${group} 공지를 불러오는 중이야.`;
+            listDescriptionEl.textContent = `${group} 공지 목록`;
 
             updateMainActive();
             renderSubs();
@@ -200,10 +200,10 @@
 
                 state.items = Array.isArray(data.items) ? data.items : [];
                 applyFilter();
-                listDescriptionEl.textContent = `${state.currentGroup} 공지를 모아서 보여주는 중이야.`;
+                listDescriptionEl.textContent = `${state.currentGroup} 공지 목록`;
             } catch (error) {
                 console.error(error);
-                renderError("공지 불러오기에 실패했어. 잠시 후 다시 시도해 줘.");
+                renderError("공지 불러오기 실패");
             } finally {
                 setLoading(false);
             }
@@ -218,10 +218,10 @@
 
                 state.items = Array.isArray(data.items) ? data.items : [];
                 applyFilter();
-                listDescriptionEl.textContent = `${sub} 공지 목록이야.`;
+                listDescriptionEl.textContent = `${sub} 공지 목록`;
             } catch (error) {
                 console.error(error);
-                renderError("세부 공지를 불러오지 못했어. 잠시 후 다시 시도해 줘.");
+                renderError("공지 불러오기 실패");
             } finally {
                 setLoading(false);
             }
@@ -256,7 +256,7 @@
             noticeCountEl.textContent = state.filtered.length;
 
             if (!state.filtered.length) {
-                emptyEl.textContent = state.items.length ? "검색 결과가 없어." : "표시할 공지가 없어.";
+                emptyEl.textContent = state.items.length ? "검색 결과 없음" : "표시할 공지 없음";
                 emptyEl.classList.remove("is-hidden");
                 return;
             }
