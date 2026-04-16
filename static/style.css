@@ -1,18 +1,17 @@
 :root {
-  --bg: #f5f7fb;
+  --bg: #f6f8fb;
   --white: #ffffff;
-  --navy: #1f2a75;
-  --navy-dark: #17205d;
-  --navy-soft: #eef1ff;
+  --navy: #233b7a;
+  --navy-dark: #1b2f63;
+  --navy-soft: #eef3ff;
+  --gray-50: #fafbfd;
+  --gray-100: #f3f5f8;
+  --gray-200: #e5e9f0;
+  --gray-300: #d5dbe5;
+  --gray-500: #6b7280;
   --text: #1f2937;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --chip: #f8fafc;
-  --shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  --radius-lg: 18px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --max-width: 1080px;
+  --shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  --max-width: 1100px;
 }
 
 * {
@@ -53,15 +52,15 @@ a:hover {
 .app-shell {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 24px 16px 40px;
+  padding: 20px 16px 36px;
 }
 
 /* 상단 */
 .hero {
   display: grid;
-  grid-template-columns: 1.5fr 0.9fr;
-  gap: 16px;
-  margin-bottom: 18px;
+  grid-template-columns: 1.6fr 0.9fr;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 .hero__text,
@@ -70,13 +69,12 @@ a:hover {
 .summary-card,
 .list-section {
   background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
   box-shadow: var(--shadow);
 }
 
 .hero__text {
-  padding: 30px 24px;
+  padding: 26px 24px;
   text-align: center;
 }
 
@@ -90,29 +88,28 @@ a:hover {
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 38px);
-  color: var(--navy);
+  font-size: clamp(28px, 4vw, 36px);
   font-weight: 800;
+  color: var(--navy);
 }
 
 .hero__desc {
   margin: 12px auto 0;
-  max-width: 680px;
-  color: var(--muted);
+  max-width: 660px;
+  color: var(--gray-500);
   font-size: 15px;
 }
 
 .hero__stats {
-  padding: 16px;
+  padding: 14px;
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat-card {
-  background: var(--navy-soft);
-  border: 1px solid #dbe1ff;
-  border-radius: 14px;
-  padding: 18px;
+  border: 1px solid var(--gray-200);
+  background: var(--gray-50);
+  padding: 16px;
   text-align: center;
 }
 
@@ -120,13 +117,13 @@ a:hover {
   display: block;
   margin-bottom: 6px;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--gray-500);
   font-weight: 700;
 }
 
 .stat-card strong {
   display: block;
-  font-size: 24px;
+  font-size: 22px;
   color: var(--navy);
   font-weight: 800;
 }
@@ -134,56 +131,53 @@ a:hover {
 /* 공통 카드 */
 .card {
   background: var(--white);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
   box-shadow: var(--shadow);
 }
 
 /* 툴바 */
 .toolbar {
-  padding: 22px 18px;
-  margin-bottom: 16px;
-  text-align: center;
+  padding: 18px;
+  margin-bottom: 14px;
 }
 
 .section-label {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: 13px;
   font-weight: 800;
-  color: var(--muted);
-  text-align: center;
+  color: var(--gray-500);
+  text-align: left;
 }
 
 .sub-wrap {
-  margin-top: 18px;
+  margin-top: 16px;
 }
 
 .chip-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 
 .chip-row--sub {
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 0 16px;
-  border-radius: 999px;
-  border: 1px solid #cfd6ea;
-  background: var(--chip);
-  color: var(--text);
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--gray-300);
+  background: #fff;
+  color: #334155;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.15s ease;
   white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .chip:hover {
@@ -193,14 +187,7 @@ a:hover {
 }
 
 .chip--main {
-  background: var(--navy);
-  color: #fff;
-  border-color: var(--navy);
-}
-
-.chip--main:hover {
-  background: var(--navy-dark);
-  color: #fff;
+  background: var(--gray-50);
 }
 
 .chip--sub {
@@ -208,9 +195,9 @@ a:hover {
 }
 
 .chip.is-active {
-  background: var(--navy-dark);
+  background: var(--navy);
   color: #fff;
-  border-color: var(--navy-dark);
+  border-color: var(--navy);
 }
 
 .search-wrap {
@@ -219,8 +206,7 @@ a:hover {
 
 .search-box {
   display: flex;
-  gap: 10px;
-  justify-content: center;
+  gap: 8px;
   max-width: 640px;
   margin: 0 auto;
 }
@@ -228,24 +214,22 @@ a:hover {
 .search-box input {
   flex: 1;
   min-width: 0;
-  height: 46px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--gray-300);
   background: #fff;
   outline: none;
 }
 
 .search-box input:focus {
-  border-color: #a5b4fc;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+  border-color: #9db0e7;
+  box-shadow: 0 0 0 3px rgba(35, 59, 122, 0.08);
 }
 
 .search-box button,
 .ghost-btn {
-  height: 46px;
-  padding: 0 16px;
-  border-radius: 10px;
+  height: 42px;
+  padding: 0 14px;
   background: var(--navy);
   color: #fff;
   font-weight: 700;
@@ -261,12 +245,12 @@ a:hover {
 .summary-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .summary-card {
-  padding: 18px;
+  padding: 16px;
   text-align: center;
 }
 
@@ -274,20 +258,20 @@ a:hover {
   display: block;
   margin-bottom: 6px;
   font-size: 13px;
-  color: var(--muted);
+  color: var(--gray-500);
   font-weight: 700;
 }
 
 .summary-card strong {
   display: block;
-  font-size: 22px;
+  font-size: 21px;
   color: var(--navy);
   font-weight: 800;
 }
 
-/* 목록 */
+/* 목록 영역 */
 .list-section {
-  padding: 20px;
+  padding: 18px;
 }
 
 .list-head {
@@ -295,42 +279,53 @@ a:hover {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid var(--navy);
 }
 
 .list-head h2 {
-  margin: 0 0 6px;
-  font-size: 24px;
+  margin: 0 0 4px;
+  font-size: 23px;
   color: var(--navy);
 }
 
 .list-head p {
   margin: 0;
-  color: var(--muted);
+  color: var(--gray-500);
   font-size: 14px;
 }
 
 .status-box {
-  padding: 28px 16px;
-  border: 1px dashed #cfd6ea;
-  border-radius: 12px;
-  background: #fafbff;
-  color: var(--muted);
+  padding: 24px 16px;
+  border: 1px dashed var(--gray-300);
+  background: var(--gray-50);
+  color: var(--gray-500);
   text-align: center;
 }
 
 .notice-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
+/* 공지 카드 -> 공지 행 느낌 */
 .notice-card {
   background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 18px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--gray-200);
+  padding: 14px 16px;
+  position: relative;
+}
+
+.notice-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--navy);
 }
 
 .notice-card__top {
@@ -338,16 +333,16 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  padding-left: 4px;
 }
 
 .notice-index,
 .notice-source {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
+  min-height: 26px;
+  padding: 0 9px;
   font-size: 12px;
   font-weight: 800;
 }
@@ -358,15 +353,16 @@ a:hover {
 }
 
 .notice-source {
-  background: #f3f4f6;
+  background: var(--gray-100);
   color: #4b5563;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--gray-200);
 }
 
 .notice-title {
   display: block;
-  margin-bottom: 12px;
-  font-size: 17px;
+  padding-left: 4px;
+  margin-bottom: 10px;
+  font-size: 16px;
   font-weight: 800;
   line-height: 1.55;
   color: var(--text);
@@ -380,20 +376,19 @@ a:hover {
 .notice-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
+  padding-left: 4px;
 }
 
 .notice-meta span {
   display: inline-flex;
   align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #f9fafb;
-  border: 1px solid #eceff3;
-  color: var(--muted);
+  min-height: 28px;
+  padding: 0 9px;
   font-size: 12px;
-  font-weight: 600;
+  color: var(--gray-500);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
 }
 
 .is-hidden {
@@ -411,7 +406,7 @@ a:hover {
 
 @media (max-width: 640px) {
   .app-shell {
-    padding: 14px 12px 28px;
+    padding: 12px 10px 24px;
   }
 
   .hero__text,
@@ -419,18 +414,11 @@ a:hover {
   .toolbar,
   .summary-card,
   .list-section {
-    border-radius: 14px;
-  }
-
-  .hero__text,
-  .hero__stats,
-  .toolbar,
-  .list-section {
-    padding: 16px;
+    padding: 14px;
   }
 
   .hero h1 {
-    font-size: 28px;
+    font-size: 27px;
   }
 
   .hero__desc {
@@ -452,8 +440,7 @@ a:hover {
 
   .chip {
     flex: 0 0 auto;
-    min-height: 40px;
-    padding: 0 14px;
+    min-height: 38px;
     font-size: 13px;
   }
 
@@ -477,11 +464,11 @@ a:hover {
   }
 
   .notice-card {
-    padding: 16px;
+    padding: 14px;
   }
 
   .notice-title {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .notice-meta span {
